@@ -10,9 +10,11 @@
       <div class="navbar-right-container">
         <div class="navbar-menu-container">
           <div class="navbar-cart-container">
-            <a href="/#/cart" class="navbar-link navbar-cart-link">
-              <i class="icon iconfont icongouwuche" ></i>
-            </a>
+            <el-tooltip class="item" effect="light" content="前往购物车结算" placement="bottom-end">
+              <a href="/cart" class="navbar-link navbar-cart-link">
+                <i class="icon iconfont icongouwuche" ></i>
+              </a>
+            </el-tooltip>
           </div>
           <a href="javascript:void(0)"
              v-if="userName.length === 0"

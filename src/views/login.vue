@@ -17,7 +17,7 @@
           <el-row>
             <el-col :span="colWidth">
               <el-form-item prop="userName">
-                <el-input v-model.trim="loginForm.userName" clearable size="large">
+                <el-input v-model.trim="loginForm.userName" clearable size="large" @keyup.enter.native="submitForm('loginForm')">
                   <template slot="prepend"><i class="icon iconfont iconyonghuming"></i></template>
                 </el-input>
               </el-form-item>
@@ -26,7 +26,7 @@
           <el-row>
             <el-col :span="colWidth" class="col-pwd">
               <el-form-item prop="userPwd">
-                <el-input v-model.trim="loginForm.userPwd" type="password" clearable size="large">
+                <el-input v-model.trim="loginForm.userPwd" type="password" clearable size="large" @keyup.enter.native="submitForm('loginForm')">
                   <template slot="prepend"><i class="icon iconfont iconmima"></i></template>
                 </el-input>
               </el-form-item>

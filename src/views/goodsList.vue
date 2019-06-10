@@ -1,7 +1,6 @@
 <template>
-  <div class="accessory-result-page accessory-page" v-loading="allLoading">
-    <page-header @setAllLoading="setAllLoading"></page-header>
-    <section class="accessory-result-page accessory-page">
+  <layout>
+    <template v-slot:container>
       <nav-bread :navOptions='navOptions'></nav-bread>
       <div class="container">
         <filter-nav @selectSort="selectSort"></filter-nav>
@@ -38,14 +37,12 @@
           </div>
         </div>
       </div>
-      <page-footer></page-footer>
-    </section>
-  </div>
+    </template>
+  </layout>
 </template>
 
 <script>
-import pageHeader from '@/components/pageHeader'
-import pageFooter from '@/components/pageFooter'
+import layout from '@/components/layout'
 import navBread from '@/components/navBread'
 import filterNav from '@/components/filterNav'
 import priceSideBar from '@/components/priceSideBar'
@@ -53,8 +50,7 @@ import goodsShow from '@/components/goodsShow'
 export default {
   name: 'goodsList',
   components: {
-    pageHeader,
-    pageFooter,
+    layout,
     navBread,
     filterNav,
     priceSideBar,
@@ -79,8 +75,7 @@ export default {
       sort: 1,
       priceLevel: 1,
       busy: true,
-      loading: true,
-      allLoading: false
+      loading: true
     }
   },
   created () {
@@ -158,15 +153,13 @@ export default {
             type: 'success'
           })
         } else if (res.data.status === 'noLogin') {
+          this.$router.push('/login')
           this.$message.error(res.data.msg)
         }
       }).catch((err) => {
         this.loading = false
         console.log(err)
       })
-    },
-    setAllLoading (flag) {
-      this.allLoading = flag
     }
   }
 }
