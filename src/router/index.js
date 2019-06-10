@@ -6,6 +6,8 @@ import Cart from '@/views/cart'
 import Address from '@/views/address'
 import OrderConfirm from '@/views/orderConfirm'
 import OrderSuccess from '@/views/orderSuccess'
+import login from '@/views/login'
+import signIn from '@/views/signIn'
 
 import store from '../vuex/index'
 
@@ -15,13 +17,26 @@ let router = new Router({
   routes: [
     {
       path: '/',
-      name: 'goodsList',
+      name: 'defaultGoodsList',
       component: GoodsList
     },
     {
       path: '/goodsList',
       name: 'goodsList',
       component: GoodsList
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: login
+    },
+    {
+      path: '/signIn',
+      name: 'signIn',
+      component: signIn,
+      meth: {
+        title: '注册'
+      }
     },
     {
       path: '/cart',
