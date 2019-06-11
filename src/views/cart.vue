@@ -1,23 +1,30 @@
 <template>
-  <layout>
+  <layout v-loading="allLoading">
     <template v-slot:container>
       <nav-bread :navOptions='navOptions'></nav-bread>
       <div class="cart-list">
         <div class="cart-title">全部商品</div>
         <div class="cart-list-header">
-          <el-checkbox class="header-select-all"
+          <el-checkbox
+            class="header-select-all"
             v-model="checked"
-            @change="checkedAll">全选</el-checkbox>
+            size="medium"
+            @change="changeBox">全选</el-checkbox>
           <span class="header-goods">商品</span>
           <span class="header-unit-price">单价</span>
           <span class="header-num">数量</span>
           <span class="header-total">小计</span>
           <span class="header-edit">操作</span>
         </div>
-        <div class="goods-detail" v-for="item in cartListData" :key="item.id">
-          <el-checkbox class="goods-select" v-model="item.boxChecked"></el-checkbox>
+        <div class="goods-detail" v-for="item in cartListData"
+          :key="item.id" :class="{'current-checked': item.boxChecked}">
+          <el-checkbox
+            class="goods-select"
+            v-model="item.boxChecked"
+            size="medium"
+            @change="changeBox(item)"></el-checkbox>
           <span class="goods-pic">
-            <a href="#">
+            <a>
               <img class="image" :src="'static/' + item.productImage" :alt="item.productName">
             </a>
           </span>
@@ -28,6 +35,14 @@
           <span class="goods-total-price">{{item.salePrice*item.productNum}}</span>
           <el-button class="goods-remove" type="text" @click="removeGoods(item)">删除</el-button>
         </div>
+      </div>
+      <div class="accounts">
+        <div class="count-num">已选择{{selectNum}}件商品</div>
+        <div class="count-pay">
+          总价：
+          <span>￥{{allPay}}</span>
+        </div>
+        <div class="to-pay">去结算</div>
       </div>
     </template>
   </layout>
@@ -55,8 +70,10 @@ export default {
         }
       ],
       cartListData: [],
-      checked: false
-
+      checked: false,
+      allLoading: false,
+      selectNum: 0,
+      allPay: 0
     }
   },
   created () {
@@ -64,13 +81,16 @@ export default {
   },
   methods: {
     getCartListData () {
+      this.allLoading = true
       this.axios.get('/goods/getCartList').then(req => {
+        this.allLoading = false
         if (req.data.status === 'success') {
           let cartData = req.data.result
           cartData.forEach(item => {
             item.boxChecked = item.checked === '1'
           })
           this.cartListData = cartData
+          this.updateCount()
         } else if (req.data.status === 'noLogin') {
           this.$router.push('/login')
         }
@@ -81,10 +101,37 @@ export default {
         productId: item.productId,
         productNum: item.productNum
       }).then(res => {
+        if (res.data.status === 'success') {
+          this.updateCount()
+        }
       })
     },
-    checkedAll () {
-
+    changeBox (item) {
+      let params = {}
+      if (typeof item === 'boolean') {
+        params.checkedAll = item ? '1' : '0'
+      } else {
+        params.checked = item.boxChecked ? '1' : '0'
+        params.productId = item.productId
+      }
+      this.axios.post('/goods/changeChecked', params).then(res => {
+        if (res.data.status === 'success') {
+          if (typeof item === 'boolean') {
+            this.cartListData.forEach(e => {
+              e.boxChecked = item
+            })
+          }
+          this.updateCount()
+        } else if (res.data.status === 'noLogin') {
+          this.$message({
+            type: 'info',
+            message: '当前登录已超时，请从新登录'
+          })
+          setTimeout(_ => {
+            this.$router.push('/login')
+          }, 1000)
+        }
+      })
     },
     removeGoods (item) {
       this.$confirm('是否将该商品从购物车中删除?', '提示', {
@@ -92,9 +139,24 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '删除没有成功!'
+        this.allLoading = true
+        this.axios.post('/goods/removeGoods', {productId: item.productId}).then(req => {
+          if (req.data.status === 'success') {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getCartListData()
+          } else {
+            this.allLoading = false
+            this.$message({
+              type: 'info',
+              message: '删除失败，请稍后重试!'
+            })
+          }
+        }).catch(err => {
+          this.allLoading = false
+          console.log(err)
         })
       }).catch(() => {
         this.$message({
@@ -102,6 +164,20 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    updateCount () {
+      let totalNum = 0
+      let totalPrice = 0
+      this.cartListData.forEach(item => {
+        if (item.boxChecked) {
+          item.productNum = parseInt(item.productNum)
+          item.salePrice = parseInt(item.salePrice)
+          totalNum += item.productNum
+          totalPrice += item.productNum * item.salePrice
+        }
+      })
+      this.selectNum = totalNum
+      this.allPay = totalPrice
     }
   }
 }
@@ -117,13 +193,18 @@ export default {
   display: flex;
   height: 32px;
   line-height: 32px;
-  margin: 0 0 10px;
   padding: 5px 0;
   background: #f3f3f3;
-  border: 1px solid #e9e9e9;
-  border-top: 0;
+  border: 1px solid #d1d1d1;
+  font-weight: 600;
+  border-bottom: 0;
   .header-select-all {
     margin-left: 50px;
+    /deep/ .el-checkbox__label {
+      font-weight: 600;
+      color: #000;
+      font-size: 16px;
+    }
   }
   .header-goods {
     flex-grow: 1;
@@ -166,7 +247,43 @@ export default {
     width: 150px;
     text-align: center;
     margin-top: 55px;
+  }
+}
+.cart-title {
+  color: #E2231A;
+  position: relative;
+  font-weight: 700;
+  line-height: 26px;
+  cursor: pointer;
+  margin: 15px 0 0 0;
+}
 
+.goods-detail.current-checked {
+  background-color: #fff4e8;
+}
+.accounts {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  height: 50px;
+  line-height: 50px;
+  background: #fff;
+  border: 1px solid #d1d1d1;
+  font-weight: 600;
+  margin-bottom: 20px;
+  justify-content: flex-end;
+  .count-num, .count-pay {
+    width: 160px;
+  }
+  .count-pay>span {
+    color: #e54346;
+  }
+  .to-pay {
+    width: 120px;
+    text-align: center;
+    background-color: #e54346;
+    color: #fff;
+    cursor: pointer;
   }
 }
 
