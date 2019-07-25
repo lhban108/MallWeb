@@ -1,9 +1,10 @@
 <template>
   <header class="header">
+    <span class="to-home-page icon iconfont iconhome" @click="toHomePage"></span>
     <div class="navbar">
       <div class="navbar-left-container">
         <a href="/">
-          <img src="static/newLogo.png" style="width: 125px;" class="navbar-brand-logo">
+          <img src="static/newLogo.png" style="width: 70px;" class="navbar-brand-logo">
         </a>
       </div>
 
@@ -74,6 +75,9 @@ export default {
     },
     toLiginPage () {
       this.$router.push('/login')
+    },
+    toHomePage () {
+      this.$router.push('/')
     }
   }
 }
@@ -86,6 +90,19 @@ export default {
   font-family: moderat,sans-serif;
   font-size: 16px;
   height: 80px;
+  position: relative;
+  .to-home-page {
+    position: absolute;
+    display: inline-block;
+    top: 15px;
+    left:15px;
+    cursor: pointer;
+    transition-duration: .2s;
+  }
+  .to-home-page:hover {
+    color: #ff6420;
+    transition-duration: .2s;
+  }
 }
 
 .navbar {

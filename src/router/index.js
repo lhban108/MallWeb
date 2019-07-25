@@ -1,63 +1,22 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import GoodsList from '@/views/goodsList'
-import Cart from '@/views/cart'
-import Address from '@/views/address'
-import OrderConfirm from '@/views/orderConfirm'
-import OrderSuccess from '@/views/orderSuccess'
-import login from '@/views/login'
-import signIn from '@/views/signIn'
+import mall from './mall'
 
 import store from '../vuex/index'
-
+import homePage from '@/views/homePage'
+import H5Drag from './H5Drag'
 Vue.use(Router)
 let router = new Router({
   mode: 'history',
   routes: [
     {
       path: '/',
-      name: 'defaultGoodsList',
-      component: GoodsList
+      name: 'homePage',
+      component: homePage
     },
-    {
-      path: '/goodsList',
-      name: 'goodsList',
-      component: GoodsList
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: login
-    },
-    {
-      path: '/signIn',
-      name: 'signIn',
-      component: signIn,
-      meth: {
-        title: '注册'
-      }
-    },
-    {
-      path: '/cart',
-      name: 'cart',
-      component: Cart
-    },
-    {
-      path: '/address',
-      name: 'address',
-      component: Address
-    },
-    {
-      path: '/orderConfirm',
-      name: 'orderConfirm',
-      component: OrderConfirm
-    },
-    {
-      path: '/orderSuccess',
-      name: 'orderSuccess',
-      component: OrderSuccess
-    }
+    ...mall,
+    ...H5Drag
   ]
 })
 

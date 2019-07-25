@@ -19,6 +19,12 @@ module.exports = {
       // },
       '/users/*': {
         target: 'http://localhost:3000'
+      },
+      '/drags/*': {
+        target: 'http://localhost:3000'
+      },
+      '/drags/getDragInfo': {
+        target: 'http://localhost:3000'
       }
     },
 
