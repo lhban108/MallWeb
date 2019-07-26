@@ -18,6 +18,12 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import './assets/js/drag'
 
+import {Toast, Indicator} from 'mint-ui'
+import 'mint-ui/lib/style.css'
+
+Vue.prototype.$toast = Toast
+Vue.prototype.$indicator = Indicator
+
 // Vue.use(infiniteScroll)
 Vue.config.productionTip = false
 
