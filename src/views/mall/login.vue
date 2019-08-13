@@ -89,7 +89,7 @@ export default {
               })
               this.$store.commit('setUserName', res.data.result.userName)
               this.$nextTick(_ => {
-                this.$router.push('/')
+                this.$router.push('/goodsList')
               })
             } else if (res.data.status === 'error') {
               this.$message.error(res.data.msg)

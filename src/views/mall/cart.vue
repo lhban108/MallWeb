@@ -62,7 +62,7 @@ export default {
       navOptions: [
         {
           name: 'Hooms',
-          path: '/'
+          path: '/goodsList'
         },
         {
           name: 'Cart',
